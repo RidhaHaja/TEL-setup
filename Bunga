@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# . ~/Bunga
+
+# Kode warna / # Define some color code
+M='\e[38;5;198m' # Red
+H='\e[38;5;82m'  # Green
+K='\e[38;5;229m' # Yellow
+U='\e[38;5;165m' # Magenta
+P='\e[38;5;256m' # White
+A="\e[38;5;$(( RANDOM % 256 ))m"
+B="\e[38;5;$(shuf -i 1-255 -n 1)m"
+C=$(for i in {230..255} {255..230} ; do echo -en "\e[48;5;${i}m \e[0m" ; done)
+
+tput clear
+  
+  row=0                              # Mulai dari baris ke...
+  n=$(( ($(tput cols)-50)/2 ))       # Rata tengah dari kolom
+  [ $n -le 0 ] && col=0 || col=$n    # Jika nilai kolom kurang dari 0 maka dikembalikan ke 0
+  
+    Baris () {
+    tput cup $(( row + ${1})) "$col"
+    }
+  
+Baris 0 && echo -e "               $B _     $A  _ _                        "
+Baris 1 && echo -e "             $B _(_)_  $A _{ ' }_              $K  wWWWw "
+Baris 2 && echo -e "$M   @@@@      $B(_)$K@$B(_)$A { '.$K!$A.' }  $P _   $U  @@@@ $K (___) "
+Baris 3 && echo -e "$M  @@$P()$M@@$K wWWWw $B(_)$H\  $A'._/\e[38;5;198mY$A\_.'$P _(_)_ $U @@$M()$U@@  $H Y   "
+Baris 4 && echo -e "$M   @@@@ $K (___) $H   '|/) $A{_,_} $P (_(®)_) $U @@@@  $H \|/  "
+Baris 5 && echo -e "$H    /      Y     (\|/    |/)   ,/$P(_)  $H (\|     |/  "
+Baris 6 && echo -e "$H (\|       |/     \|     |/  (\|         | /) \\|   "
+Baris 7 && echo -e "$H  \\|/     \|///   \\\|//  \|/// \|///     \|//   |// "
+Baris 8 && echo -e " $H^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^•$(whoami)•^^^^^^^^"
+Baris 9 && echo "$C"
+  
+ printf '\n%.0s' {1..34}    # Attempt to keep prompt to stay at bottom of screen

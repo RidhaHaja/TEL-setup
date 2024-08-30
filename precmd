@@ -1,0 +1,54 @@
+#!/usr/bin/zsh
+#### di edit oleh Ryda® - AmaN
+#### put precmd somewhere like " .~/.tel/ " and start sourcing them in your " .zshrc " file like this:
+#### . ~/.tel/precmd
+
+preexec () {
+  END=$SECONDS 
+}
+
+precmd () {
+
+  # var
+    # color
+  BLACK='\e[30m'
+  RED='\e[31m'
+  GREEN='\e[32m'
+ # BLUE='\e[34m'
+  PINK=%{$'\e[35m'%}
+        BG='\e[0;1;30;48;2;240;240;255m' #White
+        BG_PINK=%{$'\e[45m'%}
+
+        # mod
+          RESET=%{$'\e[m'%}
+          TEL="\e[3$(( RANDOM * 6 / 32767 + 1 ))mTEL"
+      ary=(👾 💻 🎨 🐈 🐓 🦃 🦚 🦜 🐢 🐲 🐉 🐼 🐙 🐳 🍄 🔥 🐚 🌊 🍉 🥝 🍋 📒 📕 📗 📘 📙 🌎 🌍 🌏 🛫 🚀)
+      ICON="${ary[RANDOM%${#ary[@]} + 1]}"
+
+    # cmd
+      START=$SECONDS
+      DATE=$(date +%d/%m/%y)
+      TIME=$(date +%H:%M:%S)
+      DIR="[$NAME]─[~${PWD/#$HOME}]"
+      BAT=$(termux-battery-status | grep perc | tr -d '[a-z]":, ' | sed s/$/%/)
+      # BAT="cat /sys/class/power_supply/battery/capacity | sed s/$/%/"
+  
+    # calc
+      GAP=$(( COLUMNS - 11 ))
+      EXEC=$(( START - END ))
+      GAP_1=$(( COLUMNS - ${#BAT} - 12 ))
+      GAP_2=$(( COLUMNS - ${#DIR} - 12 ))
+LINE=$(for i in {30..33} {33..30} ; do echo -en "\e[${i}m═" ; done ; echo)
+
+    # prompt
+     PS1="$BG_PINK "$EXEC"s $RESET$PINK $ICON "${HOME/*\/}"
+  "⟫"$RESET "
+      RPS1="$PINK$RESET$BG_PINK8 %(?;^^;--) $RESET"
+
+  # cmd
+tput cup "$(tput lines)" 0
+    echo -e "$BG
+$RED╭═ $ICON $TEL $RED${(l:$GAP::═:)}╮
+$RED║$BLACK  : $BAT${(l:$GAP_1:)TIME} :  $RED║
+$GREEN║$BLACK  : $DIR${(l:$GAP_2:)DATE} :  $GREEN║
+$GREEN╰═${(l:$GAP::═:)}$LINE╯\e[m" }

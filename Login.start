@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+# dibuat oleh Ryda® - AmaN
+
+# Place file in internal storage, then open tel and type: - " cp /sdcard/login.start ~ && chmod +x ~/login.start   "
+# Open tel_profile  ( ~/.tel/.tel_profile ) then Add this " ~/Login.sh "
+# Open userprefs.sh  ( ~/.tel/configs/userprefs.sh )
+# Add this command line :
+#     export NAME='username' # main/home window name 
+#     export PSWRD='password' # your password
+#     export LOCK='false' # true / false - settings to enable application lock or not
+
+# Kode warna / # Define some color code
+red='\e[0;31m' # Red
+grn='\e[0;32m' # Green
+ylw='\e[0;33m' # Yellow
+cyn='\e[0;36m' # Cyan
+wht='\e[0;37m' # White
+rst='\e[0m'    # Text Reset
+    
+# Informasi Hardware / # Hardware info
+ANDROID_VERSION=$(getprop ro.build.version.release)
+ARCHITECT=$(uname -m)
+BUILDID=$(getprop ro.build.id)
+DISK=$(df -h | awk '$NF=="/storage/emulated"{printf "%g %d/%dGB (%s)\n",$3,$4,$2,$5}'||df -h /storage/emulated | tail -1)
+HARDWARE=$(cat /proc/cpuinfo | grep 'Hardware' | awk '{print $3,$6}')
+HOSTNAME=$(hostname -s||getprop net.hostname)
+KERNEL_V=$(uname -sr | tr '[:upper:]' '[:lower:]')
+MANUFACTURER=$(getprop ro.product.manufacturer)
+VERSION=$(getprop ro.fota.version)
+
+. ~/.tel/configs/userprefs.sh # TEL User Preferences Configuration # 
+### Nama Pengguna dan Password / # username and password you used are here ###
+### --------------------------------------------------------------------    
+  username=$NAME # main/home window name
+  password=$PSWRD # your password
+    status=$LOCK # true / false - option to activate the lock or not
+### --------------------------------------------------------------------    
+    trp() {  
+    # Mengabaikan sinyal SIGINT (Ctrl+C) dan SIGTSTP (Ctrl+Z)
+    # 2) SIGINT	 3) SIGQUIT 4) SIGILL  5) SIGTRAP  6) SIGABRT	 9) SIGKILL 15) SIGTERM 19) SIGSTOP	20) SIGTSTP
+    trap "" INT SIGINT SIGQUIT SIGILL SIGTRAP SIGABRT SIGTERM SIGTSTP
+    # -echo	     Does not echo characters
+    # -flusho     discard output
+    # -icanon     desable special characters: erase, kill, werase, rprnt
+      stty -echo -flusho 
+      clear # Membersihkan layar terminal
+    } 
+      
+    ClearStdin() {
+      while read -e -r -t 0.1; do : ; done }
+  
+    Baris () {
+      row=0                              # Mulai dari baris ke...
+      k=$(( ($(tput cols)-${2})/2 ))     # Rata tengah dari kolom
+      [ $k -le 0 ] && col=0 || col=$k    # Jika nilai kolom kurang dari 0 maka dikembalikan ke 0
+    tput cup $(( row + ${1})) "$col"
+    }
+    
+    # This part is to make the cursor not blink
+    # on top of the animation while it lasts
+    tput civis
+    
+# Animasi pembuka / # Simple bash loading animation
+function loading_icon() {
+    local load_interval="${1}"
+    local elapsed=0
+    local loading_animation=( '█■■■■■■■■■' '██■■■■■■■■' '███■■■■■■■' '■███■■■■■■' '■■███■■■■■' '■■■███■■■■' '■■■■███■■■' '■■■■■███■■' '■■■■■■███■' '■■■■■■■███' '■■■■■■■■██' '■■■■■■■■■█' '■■■■■■■■■■' )
+      
+    trap "tput cnorm" EXIT
+
+    while [ "${load_interval}" -ne "${elapsed}" ]; do
+        for frame in "${loading_animation[@]}" ; do
+        Baris 13 12 && echo -ne  "\e[3$(( RANDOM * 6 / 32767 + 1 ))m$frame"
+          sleep 0.25
+        done
+        elapsed=$(( elapsed + 1 ))
+    done }
+    
+  ##===================##
+    tanggal=$(date)
+date1=${tanggal:11:2}
+if [ "$date1" -le "12" ]
+then
+    Jam="Good morning"
+elif [ "$date1" -ge "12" ] && [ "$date1" -le "17" ]
+then
+    Jam="Good afternoon"
+elif [ "$date1" -ge "18" ] && [ "$date1" -le "20" ]
+then
+    Jam="Good evening"
+else
+    Jam="Its Night"
+fi
+  ##===================##  
+    
+  # Mulai dari sini / # Script starts here  
+ trp
+# Menyimpan teks pesan selamat datang
+teks=" [TEL]: Welcome to Termux Expert Launcher ..."
+# Loop untuk efek animasi mengetik pada teks " teks "
+for ((i=0; i<${#teks}; i++)); do
+    # Mencetak satu karakter dari teks
+    echo -n "${teks:$i:1}"
+    # Waktu jeda antara pengetikan setiap karakter (dalam detik)
+    sleep 0.05        
+done
+
+    # Animasi loading / # loading animation
+  Baris 10 20 && echo -en "$grn┬  ┌─┐┌─┐┌┬┐┬┌┐┌┌─┐" 
+  Baris 11 20 && echo -en "$red│  │ │├─┤ │││││││ ┬"
+  Baris 12 20 && echo -en "$grn┴─┘└─┘┴ ┴─┴┘┴┘└┘└─┘"
+  loading_icon 2
+    clear
+  
+  # Menu Login
+  LogiN() {
+    x=$(tput cols)
+    clear
+Baris 4 15 && echo -en "$grn ╦  ┌─┐┌─┐┬╔╗╔"
+Baris 5 15 && echo -en "$red ║  │ ││ ┬│║║║"
+Baris 6 15 && echo -en "$grn ╩═╝└─┘└─┘┴╝╚╝\n"
+printf '═%.0s' $(seq 1 "$x")
+echo -e "
+  $ylw $VERSION
+   $Jam"
+printf '─%.0s' $(seq 1 "$x")
+    echo -e "
+     $cyn ANDROID      $grn : $rst \uE70e  $ANDROID_VERSION ($BUILDID)
+     $cyn HARDWARE     $grn : $rst   $HARDWARE
+     $cyn STORAGE      $grn : $rst \uf7c9  $DISK
+     $cyn ARCHITECT    $grn : $rst \uf68c  $ARCHITECT
+     $cyn MANUFACTURER $grn : $rst \ufbc9  $MANUFACTURER
+     $cyn KERNEL       $grn : $rst   $KERNEL_V
+     $cyn HOSTNAME     $grn : $rst \uf2c2  $HOSTNAME
+     $cyn LOCATION     $grn : $rst \uf484  $LOCATION
+     $cyn TOOL's NAME  $grn : $rst TEL-Customizer $ylw "
+    printf '─%.0s' $(seq 1 "$x")
+    echo -e "\e[5m $wht"
+    Baris 21 20 && echo -e "______________________"
+    Baris 22 20 && echo -e "──▄▀▀▀▄$grn Please Login ─$wht"
+    Baris 23 20 && echo -e "──█───█$grn To Continue ──$wht"
+    Baris 24 20 && echo -e "─███████─────────▄▀▀▄─"
+    Baris 25 20 && echo -e "░██─▀─██░░█▀█▀▀▀▀█░░█░"
+    Baris 26 20 && echo -e "░███▄███░░▀░▀░░░░░▀▀░░"
+    Baris 27 20
+ClearStdin
+stty echo
+    tput cnorm  # Restores the cursor visibility
+    printf '\e[4 q'
+read -r -p $'       \e[33m\033[1m\033[33m[\033[31m \uf2bd \033[33m]\033[37m Input\033[33m \e[1mUsername for Login:\033[32m ' user
+read -s -p $'       \e[32m\033[1m\033[33m[\033[31m \uf23e \033[33m]\033[37m Input\033[33m \e[1mPassword for Login:\033[33m ' pass                                                
+    
+  # kode periksa user dan password / # check User Code and Password  
+if [[ $pass == "$password" && $user == "$username" ]]; then
+  # jika user dan password benar / # if true
+     sleep 1
+     clear
+     ls
+  # Menampilkan AsciiArt / # Your asciiart is displayed here
+     echo -e "
+   _   _   _   _   _   _   _  
+  / \ / \ / \ / \ / \ / \ / \ 
+ ( W | E | L | C | O | M | E )
+  \_/ \_/ \_/ \_/ \_/ \_/ \_/  $NAME " 
+    sleep 2
+    exit 0
+  else
+  # jika user / password salah
+  # if the user / password is incorrect
+     clear
+     trp
+     echo -e "\e[36;1m 
+    🔐 You Entered wrong Details! $rst"
+     sleep 2
+    ClearStdin
+  # Animasi kereta api - (pkg install sl)
+     #sl   # show “sl” (Steam Locomotive) train Animation  - (pkg install sl)
+    LogiN
+    exit 0
+fi }
+
+  # option to activate the lock or not
+  if [[ $status == true ]]; then
+  LogiN
+    else
+echo -e " 
+__ __| ____| |
+   |   __|   |
+   |   |     |
+  _|  _____|_____|
+    \nis in low power mode..."
+	# use a tmux wait / set-hook onresize here
+	tput cup "$(tput lines)" 0
+	read -n 1 -s -r -p "  [ Swipe up or Press any key to exit ]"
+  clear && ClearStdin
+  exit 0
+  fi
