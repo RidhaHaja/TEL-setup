@@ -4,24 +4,6 @@ source ~/../usr/bin/tel-helpers
 a=$(dirname $0)
 #termux-setup-storage
 
-spinpid=
-function spin {
-    while : ; do for X in '\u280B' '\u2819' '\u2839' '\u2838' '\u283C' '\u2834' '\u2826' '\u2827' '\u2807' '\u280F' ; do echo -en "\b$X" ; sleep 0.1 ; done ; done
-      #while :; do for s in / - \\ \|; do printf "\r$s"; sleep .1; done; done
-}
-
-function start_spinner {
-    set +m
-    { spin & } 2>/dev/null
-    spinpid=$!
-}
-
-function stop_spinner {
-    { kill -9 $spinpid && wait; } 2>/dev/null
-    set -m
-    echo -en "\033[2K\r"
-}
-
  ###################
 if [ -z "$1" ]; then
 	update_args="--setup"
@@ -147,9 +129,7 @@ else
         log "Update Complete"
 fi
 theme --alpha 99 > /dev/null 2>&1
-log "complete"
 
- start_spinner
 #...
 if [ ! -f ~/.tel/Bunga ]; then
   if [ -f $a/Bunga ]; then
@@ -196,8 +176,7 @@ sleep 2
   fi
 fi
 
-rm -f ~/tel-setup.sh
-stop_spinner
+log "complete"
 logf "complete"
 log "app will restart in 3 seconds!"
 sleep 3
