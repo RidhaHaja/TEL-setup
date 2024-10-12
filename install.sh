@@ -118,7 +118,7 @@ logf "fixing permissions"
 
 # fix in tmux and aliases
 log "fixing tmux and aliases"
-sed -i 's/3.10/3.11/' ~/.tel/.tel_tmux.conf
+sed -i 's/3.10/3.12/' ~/.tel/.tel_tmux.conf
 sed -i 's/exa -/eza -/' ~/.aliases
 ####sed -i "s/ exa / eza /g" /data/data/com.termux/files/usr/bin/tel-setup && tel-setup
 
